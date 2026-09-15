@@ -6,10 +6,13 @@ import com.kindergarten.dao.StaffDAO;
 import com.kindergarten.dao.StudentDAO;
 
 import com.kindergarten.model.Invoice;
+import com.kindergarten.util.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
+import java.sql.Connection;
 import java.util.List;
 
 public class DashboardGUI extends JFrame {
@@ -42,7 +45,12 @@ public class DashboardGUI extends JFrame {
                 );
 
         mainPanel.setBorder(
-                new EmptyBorder(25, 30, 25, 30)
+                new EmptyBorder(
+                        25,
+                        30,
+                        25,
+                        30
+                )
         );
 
         // =========================
@@ -94,6 +102,7 @@ public class DashboardGUI extends JFrame {
         );
 
         headerPanel.add(titleLabel);
+
         headerPanel.add(
                 Box.createVerticalStrut(8)
         );
@@ -385,6 +394,28 @@ public class DashboardGUI extends JFrame {
 
     private void loadDashboardCounts() {
 
+        /*
+         * First check whether the application can
+         * connect to the MySQL database.
+         *
+         * This prevents a database connection failure
+         * from being displayed incorrectly as 0 records.
+         */
+        try (
+                Connection connection =
+                        DBConnection.getConnection()
+        ) {
+
+            // Connection successful.
+            // Continue loading dashboard information.
+
+        } catch (Exception e) {
+
+            showDatabaseUnavailable();
+
+            return;
+        }
+
         try {
 
             int totalStudents =
@@ -445,15 +476,28 @@ public class DashboardGUI extends JFrame {
 
         } catch (Exception e) {
 
-            studentsCountLabel.setText("?");
-            staffCountLabel.setText("?");
-            classesCountLabel.setText("?");
-            unpaidInvoicesCountLabel.setText("?");
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Dashboard statistics could not be loaded."
-            );
+            showDatabaseUnavailable();
         }
+    }
+
+    // =========================
+    // DATABASE FALLBACK
+    // =========================
+
+    private void showDatabaseUnavailable() {
+
+        studentsCountLabel.setText("?");
+        staffCountLabel.setText("?");
+        classesCountLabel.setText("?");
+        unpaidInvoicesCountLabel.setText("?");
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Database connection is currently unavailable.\n" +
+                        "Dashboard statistics could not be loaded.\n" +
+                        "Please check the database connection and try again.",
+                "Database Connection Error",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 }
