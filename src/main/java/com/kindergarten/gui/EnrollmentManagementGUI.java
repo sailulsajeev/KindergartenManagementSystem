@@ -52,17 +52,25 @@ public class EnrollmentManagementGUI extends JFrame {
         setLocationRelativeTo(null);
 
         JPanel mainPanel =
-                new JPanel(new BorderLayout(0, 20));
+                new JPanel(
+                        new BorderLayout(0, 20)
+                );
 
         mainPanel.setBorder(
-                new EmptyBorder(20, 25, 20, 25)
+                new EmptyBorder(
+                        20,
+                        25,
+                        20,
+                        25
+                )
         );
 
         // =========================
         // HEADER
         // =========================
 
-        JPanel headerPanel = new JPanel();
+        JPanel headerPanel =
+                new JPanel();
 
         headerPanel.setLayout(
                 new BoxLayout(
@@ -72,7 +80,9 @@ public class EnrollmentManagementGUI extends JFrame {
         );
 
         JLabel titleLabel =
-                new JLabel("Enrollment Management");
+                new JLabel(
+                        "Enrollment Management"
+                );
 
         titleLabel.setFont(
                 new Font(
@@ -104,7 +114,11 @@ public class EnrollmentManagementGUI extends JFrame {
         );
 
         headerPanel.add(titleLabel);
-        headerPanel.add(Box.createVerticalStrut(5));
+
+        headerPanel.add(
+                Box.createVerticalStrut(5)
+        );
+
         headerPanel.add(subtitleLabel);
 
         mainPanel.add(
@@ -137,7 +151,7 @@ public class EnrollmentManagementGUI extends JFrame {
         classComboBox =
                 new JComboBox<>();
 
-        // Enrollment Date calendar
+        // Enrollment Date
         enrollmentDateChooser =
                 new JDateChooser();
 
@@ -150,7 +164,7 @@ public class EnrollmentManagementGUI extends JFrame {
                 new Date()
         );
 
-        // End Date calendar
+        // End Date
         endDateChooser =
                 new JDateChooser();
 
@@ -161,7 +175,7 @@ public class EnrollmentManagementGUI extends JFrame {
         // End Date starts empty
         endDateChooser.setDate(null);
 
-        // Status dropdown
+        // Status
         statusComboBox =
                 new JComboBox<>(
                         new String[]{
@@ -211,9 +225,14 @@ public class EnrollmentManagementGUI extends JFrame {
                 statusComboBox
         );
 
-        // Empty spaces just to keep layout neat
-        formPanel.add(new JLabel(""));
-        formPanel.add(new JLabel(""));
+        // Empty spaces for layout
+        formPanel.add(
+                new JLabel("")
+        );
+
+        formPanel.add(
+                new JLabel("")
+        );
 
         centerPanel.add(
                 formPanel,
@@ -234,24 +253,46 @@ public class EnrollmentManagementGUI extends JFrame {
                 );
 
         JButton addButton =
-                new JButton("Add Enrollment");
+                new JButton(
+                        "Add Enrollment"
+                );
 
         JButton updateButton =
-                new JButton("Update Enrollment");
+                new JButton(
+                        "Update Enrollment"
+                );
 
         JButton deleteButton =
-                new JButton("Delete Enrollment");
+                new JButton(
+                        "Delete Enrollment"
+                );
 
         JButton clearButton =
-                new JButton("Clear");
+                new JButton(
+                        "Clear"
+                );
 
         Dimension buttonSize =
-                new Dimension(180, 35);
+                new Dimension(
+                        180,
+                        35
+                );
 
-        addButton.setPreferredSize(buttonSize);
-        updateButton.setPreferredSize(buttonSize);
-        deleteButton.setPreferredSize(buttonSize);
-        clearButton.setPreferredSize(buttonSize);
+        addButton.setPreferredSize(
+                buttonSize
+        );
+
+        updateButton.setPreferredSize(
+                buttonSize
+        );
+
+        deleteButton.setPreferredSize(
+                buttonSize
+        );
+
+        clearButton.setPreferredSize(
+                buttonSize
+        );
 
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
@@ -284,14 +325,19 @@ public class EnrollmentManagementGUI extends JFrame {
                             int row,
                             int column
                     ) {
+
                         return false;
                     }
                 };
 
         enrollmentTable =
-                new JTable(tableModel);
+                new JTable(
+                        tableModel
+                );
 
-        enrollmentTable.setRowHeight(28);
+        enrollmentTable.setRowHeight(
+                28
+        );
 
         enrollmentTable.setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION
@@ -308,7 +354,9 @@ public class EnrollmentManagementGUI extends JFrame {
                 );
 
         JLabel tableTitle =
-                new JLabel("Enrollment Records");
+                new JLabel(
+                        "Enrollment Records"
+                );
 
         tableTitle.setFont(
                 new Font(
@@ -381,6 +429,7 @@ public class EnrollmentManagementGUI extends JFrame {
                         e -> {
 
                             if (!e.getValueIsAdjusting()) {
+
                                 fillFieldsFromSelectedRow();
                             }
                         }
@@ -416,7 +465,9 @@ public class EnrollmentManagementGUI extends JFrame {
             );
         }
 
-        studentComboBox.setSelectedIndex(-1);
+        studentComboBox.setSelectedIndex(
+                -1
+        );
     }
 
     // =========================
@@ -428,7 +479,8 @@ public class EnrollmentManagementGUI extends JFrame {
         classComboBox.removeAllItems();
 
         classrooms =
-                classroomDAO.getAllClassrooms();
+                classroomDAO
+                        .getAllClassrooms();
 
         for (Classroom classroom : classrooms) {
 
@@ -437,7 +489,9 @@ public class EnrollmentManagementGUI extends JFrame {
             );
         }
 
-        classComboBox.setSelectedIndex(-1);
+        classComboBox.setSelectedIndex(
+                -1
+        );
     }
 
     // =========================
@@ -449,11 +503,14 @@ public class EnrollmentManagementGUI extends JFrame {
         try {
 
             int studentIndex =
-                    studentComboBox.getSelectedIndex();
+                    studentComboBox
+                            .getSelectedIndex();
 
             int classIndex =
-                    classComboBox.getSelectedIndex();
+                    classComboBox
+                            .getSelectedIndex();
 
+            // Check student
             if (studentIndex == -1) {
 
                 JOptionPane.showMessageDialog(
@@ -464,6 +521,7 @@ public class EnrollmentManagementGUI extends JFrame {
                 return;
             }
 
+            // Check class
             if (classIndex == -1) {
 
                 JOptionPane.showMessageDialog(
@@ -474,8 +532,10 @@ public class EnrollmentManagementGUI extends JFrame {
                 return;
             }
 
+            // Check enrollment date
             Date selectedEnrollmentDate =
-                    enrollmentDateChooser.getDate();
+                    enrollmentDateChooser
+                            .getDate();
 
             if (selectedEnrollmentDate == null) {
 
@@ -488,10 +548,14 @@ public class EnrollmentManagementGUI extends JFrame {
             }
 
             Student selectedStudent =
-                    students.get(studentIndex);
+                    students.get(
+                            studentIndex
+                    );
 
             Classroom selectedClass =
-                    classrooms.get(classIndex);
+                    classrooms.get(
+                            classIndex
+                    );
 
             LocalDate enrollmentDate =
                     selectedEnrollmentDate
@@ -501,11 +565,12 @@ public class EnrollmentManagementGUI extends JFrame {
                             )
                             .toLocalDate();
 
-            // End date is allowed to be empty
+            // End Date can be empty
             LocalDate endDate = null;
 
             Date selectedEndDate =
-                    endDateChooser.getDate();
+                    endDateChooser
+                            .getDate();
 
             if (selectedEndDate != null) {
 
@@ -518,9 +583,11 @@ public class EnrollmentManagementGUI extends JFrame {
                                 .toLocalDate();
             }
 
-            // Check that End Date is not before Enrollment Date
+            // End Date cannot be before Enrollment Date
             if (endDate != null
-                    && endDate.isBefore(enrollmentDate)) {
+                    && endDate.isBefore(
+                    enrollmentDate
+            )) {
 
                 JOptionPane.showMessageDialog(
                         this,
@@ -535,20 +602,53 @@ public class EnrollmentManagementGUI extends JFrame {
                             .getSelectedItem()
                             .toString();
 
+            // =========================
+            // ACTIVE ENROLLMENT CHECK
+            // =========================
+
+            if (status.equalsIgnoreCase(
+                    "Active"
+            )) {
+
+                boolean alreadyActive =
+                        hasActiveEnrollment(
+                                selectedStudent
+                                        .getStudentId(),
+                                -1
+                        );
+
+                if (alreadyActive) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "This student already has an active class enrollment.\n" +
+                                    "Complete or cancel the current enrollment before " +
+                                    "adding another active class.",
+                            "Active Enrollment Exists",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+
+                    return;
+                }
+            }
+
             Enrollment enrollment =
                     new Enrollment(
                             0,
-                            selectedStudent.getStudentId(),
-                            selectedClass.getClassId(),
+                            selectedStudent
+                                    .getStudentId(),
+                            selectedClass
+                                    .getClassId(),
                             enrollmentDate,
                             endDate,
                             status
                     );
 
             boolean added =
-                    enrollmentDAO.addEnrollment(
-                            enrollment
-                    );
+                    enrollmentDAO
+                            .addEnrollment(
+                                    enrollment
+                            );
 
             if (added) {
 
@@ -584,7 +684,8 @@ public class EnrollmentManagementGUI extends JFrame {
     private void updateEnrollment() {
 
         int selectedRow =
-                enrollmentTable.getSelectedRow();
+                enrollmentTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -599,10 +700,12 @@ public class EnrollmentManagementGUI extends JFrame {
         try {
 
             int studentIndex =
-                    studentComboBox.getSelectedIndex();
+                    studentComboBox
+                            .getSelectedIndex();
 
             int classIndex =
-                    classComboBox.getSelectedIndex();
+                    classComboBox
+                            .getSelectedIndex();
 
             if (studentIndex == -1) {
 
@@ -625,7 +728,8 @@ public class EnrollmentManagementGUI extends JFrame {
             }
 
             Date selectedEnrollmentDate =
-                    enrollmentDateChooser.getDate();
+                    enrollmentDateChooser
+                            .getDate();
 
             if (selectedEnrollmentDate == null) {
 
@@ -648,10 +752,14 @@ public class EnrollmentManagementGUI extends JFrame {
                     );
 
             Student selectedStudent =
-                    students.get(studentIndex);
+                    students.get(
+                            studentIndex
+                    );
 
             Classroom selectedClass =
-                    classrooms.get(classIndex);
+                    classrooms.get(
+                            classIndex
+                    );
 
             LocalDate enrollmentDate =
                     selectedEnrollmentDate
@@ -664,7 +772,8 @@ public class EnrollmentManagementGUI extends JFrame {
             LocalDate endDate = null;
 
             Date selectedEndDate =
-                    endDateChooser.getDate();
+                    endDateChooser
+                            .getDate();
 
             if (selectedEndDate != null) {
 
@@ -678,7 +787,9 @@ public class EnrollmentManagementGUI extends JFrame {
             }
 
             if (endDate != null
-                    && endDate.isBefore(enrollmentDate)) {
+                    && endDate.isBefore(
+                    enrollmentDate
+            )) {
 
                 JOptionPane.showMessageDialog(
                         this,
@@ -693,20 +804,52 @@ public class EnrollmentManagementGUI extends JFrame {
                             .getSelectedItem()
                             .toString();
 
+            // =========================
+            // ACTIVE ENROLLMENT CHECK
+            // =========================
+
+            if (status.equalsIgnoreCase(
+                    "Active"
+            )) {
+
+                boolean alreadyActive =
+                        hasActiveEnrollment(
+                                selectedStudent
+                                        .getStudentId(),
+                                enrollmentId
+                        );
+
+                if (alreadyActive) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "This student already has another active class enrollment.\n" +
+                                    "Complete or cancel the current enrollment first.",
+                            "Active Enrollment Exists",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+
+                    return;
+                }
+            }
+
             Enrollment enrollment =
                     new Enrollment(
                             enrollmentId,
-                            selectedStudent.getStudentId(),
-                            selectedClass.getClassId(),
+                            selectedStudent
+                                    .getStudentId(),
+                            selectedClass
+                                    .getClassId(),
                             enrollmentDate,
                             endDate,
                             status
                     );
 
             boolean updated =
-                    enrollmentDAO.updateEnrollment(
-                            enrollment
-                    );
+                    enrollmentDAO
+                            .updateEnrollment(
+                                    enrollment
+                            );
 
             if (updated) {
 
@@ -736,13 +879,61 @@ public class EnrollmentManagementGUI extends JFrame {
     }
 
     // =========================
+    // CHECK ACTIVE ENROLLMENT
+    // =========================
+
+    private boolean hasActiveEnrollment(
+            int studentId,
+            int enrollmentIdToIgnore
+    ) {
+
+        List<Enrollment> enrollmentList =
+                enrollmentDAO
+                        .getAllEnrollments();
+
+        for (Enrollment enrollment :
+                enrollmentList) {
+
+            boolean sameStudent =
+                    enrollment.getStudentId()
+                            == studentId;
+
+            boolean active =
+                    enrollment.getStatus()
+                            != null
+                            && enrollment
+                            .getStatus()
+                            .equalsIgnoreCase(
+                                    "Active"
+                            );
+
+            // When updating, ignore the record
+            // currently being edited.
+            boolean differentRecord =
+                    enrollment
+                            .getEnrollmentId()
+                            != enrollmentIdToIgnore;
+
+            if (sameStudent
+                    && active
+                    && differentRecord) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // =========================
     // DELETE ENROLLMENT
     // =========================
 
     private void deleteEnrollment() {
 
         int selectedRow =
-                enrollmentTable.getSelectedRow();
+                enrollmentTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -776,9 +967,10 @@ public class EnrollmentManagementGUI extends JFrame {
                 JOptionPane.YES_OPTION) {
 
             boolean deleted =
-                    enrollmentDAO.deleteEnrollment(
-                            enrollmentId
-                    );
+                    enrollmentDAO
+                            .deleteEnrollment(
+                                    enrollmentId
+                            );
 
             if (deleted) {
 
@@ -806,51 +998,70 @@ public class EnrollmentManagementGUI extends JFrame {
 
     private void loadEnrollments() {
 
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(
+                0
+        );
 
         List<Enrollment> enrollmentList =
-                enrollmentDAO.getAllEnrollments();
+                enrollmentDAO
+                        .getAllEnrollments();
 
-        for (Enrollment enrollment : enrollmentList) {
+        for (Enrollment enrollment :
+                enrollmentList) {
 
             String studentName =
                     getStudentName(
-                            enrollment.getStudentId()
+                            enrollment
+                                    .getStudentId()
                     );
 
             String className =
                     getClassName(
-                            enrollment.getClassId()
+                            enrollment
+                                    .getClassId()
                     );
 
             Object endDateValue;
 
-            if (enrollment.getEndDate() == null) {
+            if (enrollment.getEndDate()
+                    == null) {
+
                 endDateValue = "";
+
             } else {
-                endDateValue = enrollment.getEndDate();
+
+                endDateValue =
+                        enrollment
+                                .getEndDate();
             }
 
             Object[] row = {
 
-                    enrollment.getEnrollmentId(),
+                    enrollment
+                            .getEnrollmentId(),
 
-                    enrollment.getStudentId(),
+                    enrollment
+                            .getStudentId(),
 
                     studentName,
 
-                    enrollment.getClassId(),
+                    enrollment
+                            .getClassId(),
 
                     className,
 
-                    enrollment.getEnrollmentDate(),
+                    enrollment
+                            .getEnrollmentDate(),
 
                     endDateValue,
 
-                    enrollment.getStatus()
+                    enrollment
+                            .getStatus()
             };
 
-            tableModel.addRow(row);
+            tableModel.addRow(
+                    row
+            );
         }
     }
 
@@ -862,14 +1073,17 @@ public class EnrollmentManagementGUI extends JFrame {
             int studentId
     ) {
 
-        for (Student student : students) {
+        for (Student student :
+                students) {
 
             if (student.getStudentId()
                     == studentId) {
 
-                return student.getFirstName()
+                return student
+                        .getFirstName()
                         + " "
-                        + student.getLastName();
+                        + student
+                        .getLastName();
             }
         }
 
@@ -884,12 +1098,14 @@ public class EnrollmentManagementGUI extends JFrame {
             int classId
     ) {
 
-        for (Classroom classroom : classrooms) {
+        for (Classroom classroom :
+                classrooms) {
 
             if (classroom.getClassId()
                     == classId) {
 
-                return classroom.getClassName();
+                return classroom
+                        .getClassName();
             }
         }
 
@@ -903,9 +1119,11 @@ public class EnrollmentManagementGUI extends JFrame {
     private void fillFieldsFromSelectedRow() {
 
         int selectedRow =
-                enrollmentTable.getSelectedRow();
+                enrollmentTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
+
             return;
         }
 
@@ -929,8 +1147,13 @@ public class EnrollmentManagementGUI extends JFrame {
                                 .toString()
                 );
 
-        selectStudentById(studentId);
-        selectClassById(classId);
+        selectStudentById(
+                studentId
+        );
+
+        selectClassById(
+                classId
+        );
 
         // Enrollment Date
         LocalDate enrollmentDate =
@@ -958,21 +1181,27 @@ public class EnrollmentManagementGUI extends JFrame {
 
         // End Date
         Object endDateObject =
-                tableModel.getValueAt(
-                        selectedRow,
-                        6
-                );
+                tableModel
+                        .getValueAt(
+                                selectedRow,
+                                6
+                        );
 
         if (endDateObject == null
-                || endDateObject.toString().isBlank()) {
+                || endDateObject
+                .toString()
+                .isBlank()) {
 
-            endDateChooser.setDate(null);
+            endDateChooser.setDate(
+                    null
+            );
 
         } else {
 
             LocalDate endDate =
                     LocalDate.parse(
-                            endDateObject.toString()
+                            endDateObject
+                                    .toString()
                     );
 
             Date endDateValue =
@@ -1010,16 +1239,21 @@ public class EnrollmentManagementGUI extends JFrame {
             int studentId
     ) {
 
-        for (int i = 0;
-             i < students.size();
-             i++) {
+        for (
+                int i = 0;
+                i < students.size();
+                i++
+        ) {
 
             if (students
                     .get(i)
                     .getStudentId()
                     == studentId) {
 
-                studentComboBox.setSelectedIndex(i);
+                studentComboBox
+                        .setSelectedIndex(
+                                i
+                        );
 
                 return;
             }
@@ -1034,16 +1268,21 @@ public class EnrollmentManagementGUI extends JFrame {
             int classId
     ) {
 
-        for (int i = 0;
-             i < classrooms.size();
-             i++) {
+        for (
+                int i = 0;
+                i < classrooms.size();
+                i++
+        ) {
 
             if (classrooms
                     .get(i)
                     .getClassId()
                     == classId) {
 
-                classComboBox.setSelectedIndex(i);
+                classComboBox
+                        .setSelectedIndex(
+                                i
+                        );
 
                 return;
             }
@@ -1056,9 +1295,13 @@ public class EnrollmentManagementGUI extends JFrame {
 
     private void clearFields() {
 
-        studentComboBox.setSelectedIndex(-1);
+        studentComboBox.setSelectedIndex(
+                -1
+        );
 
-        classComboBox.setSelectedIndex(-1);
+        classComboBox.setSelectedIndex(
+                -1
+        );
 
         // Reset Enrollment Date to today
         enrollmentDateChooser.setDate(
@@ -1066,9 +1309,13 @@ public class EnrollmentManagementGUI extends JFrame {
         );
 
         // End Date stays empty
-        endDateChooser.setDate(null);
+        endDateChooser.setDate(
+                null
+        );
 
-        statusComboBox.setSelectedIndex(0);
+        statusComboBox.setSelectedIndex(
+                0
+        );
 
         enrollmentTable.clearSelection();
     }
