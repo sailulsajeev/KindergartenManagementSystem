@@ -20,7 +20,6 @@ public class GuardianStudentBridgeGUI extends JFrame {
     private JComboBox<String> guardianComboBox;
     private JComboBox<String> studentComboBox;
 
-    // Changed from JTextField to dropdown
     private JComboBox<String> relationshipTypeComboBox;
 
     private JTextField emergencyPriorityField;
@@ -47,10 +46,17 @@ public class GuardianStudentBridgeGUI extends JFrame {
         setLocationRelativeTo(null);
 
         JPanel mainPanel =
-                new JPanel(new BorderLayout(0, 20));
+                new JPanel(
+                        new BorderLayout(0, 20)
+                );
 
         mainPanel.setBorder(
-                new EmptyBorder(20, 25, 20, 25)
+                new EmptyBorder(
+                        20,
+                        25,
+                        20,
+                        25
+                )
         );
 
         // =========================
@@ -102,9 +108,11 @@ public class GuardianStudentBridgeGUI extends JFrame {
         );
 
         headerPanel.add(titleLabel);
+
         headerPanel.add(
                 Box.createVerticalStrut(5)
         );
+
         headerPanel.add(subtitleLabel);
 
         mainPanel.add(
@@ -217,10 +225,15 @@ public class GuardianStudentBridgeGUI extends JFrame {
                 );
 
         JButton clearButton =
-                new JButton("Clear");
+                new JButton(
+                        "Clear"
+                );
 
         Dimension buttonSize =
-                new Dimension(180, 35);
+                new Dimension(
+                        180,
+                        35
+                );
 
         addButton.setPreferredSize(
                 buttonSize
@@ -267,14 +280,19 @@ public class GuardianStudentBridgeGUI extends JFrame {
                             int row,
                             int column
                     ) {
+
                         return false;
                     }
                 };
 
         relationshipTable =
-                new JTable(tableModel);
+                new JTable(
+                        tableModel
+                );
 
-        relationshipTable.setRowHeight(28);
+        relationshipTable.setRowHeight(
+                28
+        );
 
         relationshipTable.setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION
@@ -366,6 +384,7 @@ public class GuardianStudentBridgeGUI extends JFrame {
                         e -> {
 
                             if (!e.getValueIsAdjusting()) {
+
                                 fillFieldsFromSelectedRow();
                             }
                         }
@@ -401,7 +420,9 @@ public class GuardianStudentBridgeGUI extends JFrame {
             );
         }
 
-        guardianComboBox.setSelectedIndex(-1);
+        guardianComboBox.setSelectedIndex(
+                -1
+        );
     }
 
     // =========================
@@ -427,7 +448,9 @@ public class GuardianStudentBridgeGUI extends JFrame {
             );
         }
 
-        studentComboBox.setSelectedIndex(-1);
+        studentComboBox.setSelectedIndex(
+                -1
+        );
     }
 
     // =========================
@@ -439,10 +462,12 @@ public class GuardianStudentBridgeGUI extends JFrame {
         try {
 
             int guardianIndex =
-                    guardianComboBox.getSelectedIndex();
+                    guardianComboBox
+                            .getSelectedIndex();
 
             int studentIndex =
-                    studentComboBox.getSelectedIndex();
+                    studentComboBox
+                            .getSelectedIndex();
 
             if (guardianIndex == -1
                     || studentIndex == -1) {
@@ -482,6 +507,26 @@ public class GuardianStudentBridgeGUI extends JFrame {
                     relationshipTypeComboBox
                             .getSelectedItem()
                             .toString();
+
+            // =========================
+            // DUPLICATE RELATIONSHIP CHECK
+            // =========================
+
+            if (relationshipAlreadyExists(
+                    selectedGuardian.getGuardianId(),
+                    selectedStudent.getStudentId()
+            )) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "This guardian is already linked to this student.\n" +
+                                "Select the existing relationship and use Update Relationship instead.",
+                        "Duplicate Relationship",
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
 
             GuardianStudentBridge relationship =
                     new GuardianStudentBridge(
@@ -710,7 +755,9 @@ public class GuardianStudentBridgeGUI extends JFrame {
 
     private void loadRelationships() {
 
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(
+                0
+        );
 
         List<GuardianStudentBridge> relationships =
                 bridgeDAO.getAllRelationships();
@@ -720,30 +767,38 @@ public class GuardianStudentBridgeGUI extends JFrame {
 
             String guardianName =
                     getGuardianName(
-                            relationship.getGuardianId()
+                            relationship
+                                    .getGuardianId()
                     );
 
             String studentName =
                     getStudentName(
-                            relationship.getStudentId()
+                            relationship
+                                    .getStudentId()
                     );
 
             Object[] row = {
 
-                    relationship.getGuardianId(),
+                    relationship
+                            .getGuardianId(),
 
                     guardianName,
 
-                    relationship.getStudentId(),
+                    relationship
+                            .getStudentId(),
 
                     studentName,
 
-                    relationship.getRelationshipType(),
+                    relationship
+                            .getRelationshipType(),
 
-                    relationship.getEmergencyPriority()
+                    relationship
+                            .getEmergencyPriority()
             };
 
-            tableModel.addRow(row);
+            tableModel.addRow(
+                    row
+            );
         }
     }
 
@@ -760,9 +815,11 @@ public class GuardianStudentBridgeGUI extends JFrame {
             if (guardian.getGuardianId()
                     == guardianId) {
 
-                return guardian.getFirstName()
+                return guardian
+                        .getFirstName()
                         + " "
-                        + guardian.getLastName();
+                        + guardian
+                        .getLastName();
             }
         }
 
@@ -782,9 +839,11 @@ public class GuardianStudentBridgeGUI extends JFrame {
             if (student.getStudentId()
                     == studentId) {
 
-                return student.getFirstName()
+                return student
+                        .getFirstName()
                         + " "
-                        + student.getLastName();
+                        + student
+                        .getLastName();
             }
         }
 
@@ -831,20 +890,22 @@ public class GuardianStudentBridgeGUI extends JFrame {
                     studentId
             );
 
-            relationshipTypeComboBox.setSelectedItem(
+            relationshipTypeComboBox
+                    .setSelectedItem(
+                            tableModel
+                                    .getValueAt(
+                                            selectedRow,
+                                            4
+                                    )
+                                    .toString()
+                    );
+
+            Object priority =
                     tableModel
                             .getValueAt(
                                     selectedRow,
-                                    4
-                            )
-                            .toString()
-            );
-
-            Object priority =
-                    tableModel.getValueAt(
-                            selectedRow,
-                            5
-                    );
+                                    5
+                            );
 
             if (priority == null) {
 
@@ -862,6 +923,38 @@ public class GuardianStudentBridgeGUI extends JFrame {
     }
 
     // =========================
+    // DUPLICATE RELATIONSHIP CHECK
+    // =========================
+
+    private boolean relationshipAlreadyExists(
+            int guardianId,
+            int studentId
+    ) {
+
+        List<GuardianStudentBridge> relationships =
+                bridgeDAO.getAllRelationships();
+
+        for (GuardianStudentBridge relationship
+                : relationships) {
+
+            boolean sameGuardian =
+                    relationship.getGuardianId()
+                            == guardianId;
+
+            boolean sameStudent =
+                    relationship.getStudentId()
+                            == studentId;
+
+            if (sameGuardian && sameStudent) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // =========================
     // EMERGENCY PRIORITY VALIDATION
     // =========================
 
@@ -874,6 +967,7 @@ public class GuardianStudentBridgeGUI extends JFrame {
 
         // Optional field
         if (priorityText.isEmpty()) {
+
             return null;
         }
 
@@ -900,7 +994,8 @@ public class GuardianStudentBridgeGUI extends JFrame {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Emergency Priority must be a whole number.\nExample: 1, 2 or 3"
+                    "Emergency Priority must be a whole number.\n" +
+                            "Example: 1, 2 or 3"
             );
 
             return null;
@@ -915,9 +1010,11 @@ public class GuardianStudentBridgeGUI extends JFrame {
             int guardianId
     ) {
 
-        for (int i = 0;
-             i < guardians.size();
-             i++) {
+        for (
+                int i = 0;
+                i < guardians.size();
+                i++
+        ) {
 
             if (guardians
                     .get(i)
@@ -940,9 +1037,11 @@ public class GuardianStudentBridgeGUI extends JFrame {
             int studentId
     ) {
 
-        for (int i = 0;
-             i < students.size();
-             i++) {
+        for (
+                int i = 0;
+                i < students.size();
+                i++
+        ) {
 
             if (students
                     .get(i)
@@ -963,13 +1062,21 @@ public class GuardianStudentBridgeGUI extends JFrame {
 
     private void clearFields() {
 
-        guardianComboBox.setSelectedIndex(-1);
+        guardianComboBox.setSelectedIndex(
+                -1
+        );
 
-        studentComboBox.setSelectedIndex(-1);
+        studentComboBox.setSelectedIndex(
+                -1
+        );
 
-        relationshipTypeComboBox.setSelectedIndex(0);
+        relationshipTypeComboBox.setSelectedIndex(
+                0
+        );
 
-        emergencyPriorityField.setText("");
+        emergencyPriorityField.setText(
+                ""
+        );
 
         relationshipTable.clearSelection();
     }
