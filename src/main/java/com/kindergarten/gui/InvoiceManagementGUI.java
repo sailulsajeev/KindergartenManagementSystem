@@ -49,17 +49,25 @@ public class InvoiceManagementGUI extends JFrame {
         setLocationRelativeTo(null);
 
         JPanel mainPanel =
-                new JPanel(new BorderLayout(0, 20));
+                new JPanel(
+                        new BorderLayout(0, 20)
+                );
 
         mainPanel.setBorder(
-                new EmptyBorder(20, 25, 20, 25)
+                new EmptyBorder(
+                        20,
+                        25,
+                        20,
+                        25
+                )
         );
 
         // =========================
         // HEADER
         // =========================
 
-        JPanel headerPanel = new JPanel();
+        JPanel headerPanel =
+                new JPanel();
 
         headerPanel.setLayout(
                 new BoxLayout(
@@ -69,7 +77,9 @@ public class InvoiceManagementGUI extends JFrame {
         );
 
         JLabel titleLabel =
-                new JLabel("Invoice Management");
+                new JLabel(
+                        "Invoice Management"
+                );
 
         titleLabel.setFont(
                 new Font(
@@ -101,7 +111,11 @@ public class InvoiceManagementGUI extends JFrame {
         );
 
         headerPanel.add(titleLabel);
-        headerPanel.add(Box.createVerticalStrut(5));
+
+        headerPanel.add(
+                Box.createVerticalStrut(5)
+        );
+
         headerPanel.add(subtitleLabel);
 
         mainPanel.add(
@@ -138,7 +152,6 @@ public class InvoiceManagementGUI extends JFrame {
                 "yyyy-MM-dd"
         );
 
-        // Default issue date to today
         issueDateChooser.setDate(
                 new Date()
         );
@@ -203,8 +216,13 @@ public class InvoiceManagementGUI extends JFrame {
                 statusComboBox
         );
 
-        formPanel.add(new JLabel(""));
-        formPanel.add(new JLabel(""));
+        formPanel.add(
+                new JLabel("")
+        );
+
+        formPanel.add(
+                new JLabel("")
+        );
 
         centerPanel.add(
                 formPanel,
@@ -225,24 +243,46 @@ public class InvoiceManagementGUI extends JFrame {
                 );
 
         JButton addButton =
-                new JButton("Add Invoice");
+                new JButton(
+                        "Add Invoice"
+                );
 
         JButton updateButton =
-                new JButton("Update Invoice");
+                new JButton(
+                        "Update Invoice"
+                );
 
         JButton deleteButton =
-                new JButton("Delete Invoice");
+                new JButton(
+                        "Delete Invoice"
+                );
 
         JButton clearButton =
-                new JButton("Clear");
+                new JButton(
+                        "Clear"
+                );
 
         Dimension buttonSize =
-                new Dimension(170, 35);
+                new Dimension(
+                        170,
+                        35
+                );
 
-        addButton.setPreferredSize(buttonSize);
-        updateButton.setPreferredSize(buttonSize);
-        deleteButton.setPreferredSize(buttonSize);
-        clearButton.setPreferredSize(buttonSize);
+        addButton.setPreferredSize(
+                buttonSize
+        );
+
+        updateButton.setPreferredSize(
+                buttonSize
+        );
+
+        deleteButton.setPreferredSize(
+                buttonSize
+        );
+
+        clearButton.setPreferredSize(
+                buttonSize
+        );
 
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
@@ -274,14 +314,19 @@ public class InvoiceManagementGUI extends JFrame {
                             int row,
                             int column
                     ) {
+
                         return false;
                     }
                 };
 
         invoiceTable =
-                new JTable(tableModel);
+                new JTable(
+                        tableModel
+                );
 
-        invoiceTable.setRowHeight(28);
+        invoiceTable.setRowHeight(
+                28
+        );
 
         invoiceTable.setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION
@@ -298,7 +343,9 @@ public class InvoiceManagementGUI extends JFrame {
                 );
 
         JLabel tableTitle =
-                new JLabel("Invoice Records");
+                new JLabel(
+                        "Invoice Records"
+                );
 
         tableTitle.setFont(
                 new Font(
@@ -371,6 +418,7 @@ public class InvoiceManagementGUI extends JFrame {
                         e -> {
 
                             if (!e.getValueIsAdjusting()) {
+
                                 fillFieldsFromSelectedRow();
                             }
                         }
@@ -405,7 +453,9 @@ public class InvoiceManagementGUI extends JFrame {
             );
         }
 
-        studentComboBox.setSelectedIndex(-1);
+        studentComboBox.setSelectedIndex(
+                -1
+        );
     }
 
     // =========================
@@ -417,7 +467,8 @@ public class InvoiceManagementGUI extends JFrame {
         try {
 
             int studentIndex =
-                    studentComboBox.getSelectedIndex();
+                    studentComboBox
+                            .getSelectedIndex();
 
             if (studentIndex == -1) {
 
@@ -430,10 +481,12 @@ public class InvoiceManagementGUI extends JFrame {
             }
 
             Date selectedIssueDate =
-                    issueDateChooser.getDate();
+                    issueDateChooser
+                            .getDate();
 
             Date selectedDueDate =
-                    dueDateChooser.getDate();
+                    dueDateChooser
+                            .getDate();
 
             if (selectedIssueDate == null) {
 
@@ -471,7 +524,9 @@ public class InvoiceManagementGUI extends JFrame {
             }
 
             BigDecimal amountDue =
-                    new BigDecimal(amountText);
+                    new BigDecimal(
+                            amountText
+                    );
 
             if (amountDue.compareTo(
                     BigDecimal.ZERO
@@ -521,7 +576,9 @@ public class InvoiceManagementGUI extends JFrame {
             // DUE DATE VALIDATION
             // =========================
 
-            if (dueDate.isBefore(issueDate)) {
+            if (dueDate.isBefore(
+                    issueDate
+            )) {
 
                 JOptionPane.showMessageDialog(
                         this,
@@ -532,17 +589,47 @@ public class InvoiceManagementGUI extends JFrame {
             }
 
             Student selectedStudent =
-                    students.get(studentIndex);
+                    students.get(
+                            studentIndex
+                    );
 
             String status =
                     statusComboBox
                             .getSelectedItem()
                             .toString();
 
+            // =========================
+            // DUPLICATE INVOICE CHECK
+            // =========================
+
+            boolean duplicate =
+                    hasDuplicateInvoice(
+                            selectedStudent
+                                    .getStudentId(),
+                            issueDate,
+                            dueDate,
+                            amountDue,
+                            status,
+                            -1
+                    );
+
+            if (duplicate) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "An identical invoice already exists for this student.",
+                        "Duplicate Invoice",
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
+
             Invoice invoice =
                     new Invoice(
                             0,
-                            selectedStudent.getStudentId(),
+                            selectedStudent
+                                    .getStudentId(),
                             issueDate,
                             dueDate,
                             amountDue,
@@ -550,9 +637,10 @@ public class InvoiceManagementGUI extends JFrame {
                     );
 
             boolean added =
-                    invoiceDAO.addInvoice(
-                            invoice
-                    );
+                    invoiceDAO
+                            .addInvoice(
+                                    invoice
+                            );
 
             if (added) {
 
@@ -595,7 +683,8 @@ public class InvoiceManagementGUI extends JFrame {
     private void updateInvoice() {
 
         int selectedRow =
-                invoiceTable.getSelectedRow();
+                invoiceTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -610,7 +699,8 @@ public class InvoiceManagementGUI extends JFrame {
         try {
 
             int studentIndex =
-                    studentComboBox.getSelectedIndex();
+                    studentComboBox
+                            .getSelectedIndex();
 
             if (studentIndex == -1) {
 
@@ -623,10 +713,12 @@ public class InvoiceManagementGUI extends JFrame {
             }
 
             Date selectedIssueDate =
-                    issueDateChooser.getDate();
+                    issueDateChooser
+                            .getDate();
 
             Date selectedDueDate =
-                    dueDateChooser.getDate();
+                    dueDateChooser
+                            .getDate();
 
             if (selectedIssueDate == null) {
 
@@ -664,7 +756,9 @@ public class InvoiceManagementGUI extends JFrame {
             }
 
             BigDecimal amountDue =
-                    new BigDecimal(amountText);
+                    new BigDecimal(
+                            amountText
+                    );
 
             if (amountDue.compareTo(
                     BigDecimal.ZERO
@@ -714,7 +808,9 @@ public class InvoiceManagementGUI extends JFrame {
             // DUE DATE VALIDATION
             // =========================
 
-            if (dueDate.isBefore(issueDate)) {
+            if (dueDate.isBefore(
+                    issueDate
+            )) {
 
                 JOptionPane.showMessageDialog(
                         this,
@@ -735,17 +831,47 @@ public class InvoiceManagementGUI extends JFrame {
                     );
 
             Student selectedStudent =
-                    students.get(studentIndex);
+                    students.get(
+                            studentIndex
+                    );
 
             String status =
                     statusComboBox
                             .getSelectedItem()
                             .toString();
 
+            // =========================
+            // DUPLICATE INVOICE CHECK
+            // =========================
+
+            boolean duplicate =
+                    hasDuplicateInvoice(
+                            selectedStudent
+                                    .getStudentId(),
+                            issueDate,
+                            dueDate,
+                            amountDue,
+                            status,
+                            invoiceId
+                    );
+
+            if (duplicate) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "An identical invoice already exists for this student.",
+                        "Duplicate Invoice",
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                return;
+            }
+
             Invoice invoice =
                     new Invoice(
                             invoiceId,
-                            selectedStudent.getStudentId(),
+                            selectedStudent
+                                    .getStudentId(),
                             issueDate,
                             dueDate,
                             amountDue,
@@ -753,9 +879,10 @@ public class InvoiceManagementGUI extends JFrame {
                     );
 
             boolean updated =
-                    invoiceDAO.updateInvoice(
-                            invoice
-                    );
+                    invoiceDAO
+                            .updateInvoice(
+                                    invoice
+                            );
 
             if (updated) {
 
@@ -792,13 +919,77 @@ public class InvoiceManagementGUI extends JFrame {
     }
 
     // =========================
+    // DUPLICATE INVOICE CHECK
+    // =========================
+
+    private boolean hasDuplicateInvoice(
+            int studentId,
+            LocalDate issueDate,
+            LocalDate dueDate,
+            BigDecimal amountDue,
+            String status,
+            int invoiceIdToIgnore
+    ) {
+
+        List<Invoice> invoices =
+                invoiceDAO
+                        .getAllInvoices();
+
+        for (Invoice invoice : invoices) {
+
+            boolean differentRecord =
+                    invoice.getInvoiceId()
+                            != invoiceIdToIgnore;
+
+            boolean sameStudent =
+                    invoice.getStudentId()
+                            == studentId;
+
+            boolean sameIssueDate =
+                    invoice.getIssueDate()
+                            .equals(issueDate);
+
+            boolean sameDueDate =
+                    invoice.getDueDate()
+                            .equals(dueDate);
+
+            boolean sameAmount =
+                    invoice.getAmountDue()
+                            .compareTo(amountDue)
+                            == 0;
+
+            boolean sameStatus =
+                    invoice.getStatus()
+                            != null
+                            && invoice
+                            .getStatus()
+                            .equalsIgnoreCase(
+                                    status
+                            );
+
+            if (differentRecord
+                    && sameStudent
+                    && sameIssueDate
+                    && sameDueDate
+                    && sameAmount
+                    && sameStatus) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // =========================
     // DELETE INVOICE
     // =========================
 
     private void deleteInvoice() {
 
         int selectedRow =
-                invoiceTable.getSelectedRow();
+                invoiceTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -832,9 +1023,10 @@ public class InvoiceManagementGUI extends JFrame {
                 JOptionPane.YES_OPTION) {
 
             boolean deleted =
-                    invoiceDAO.deleteInvoice(
-                            invoiceId
-                    );
+                    invoiceDAO
+                            .deleteInvoice(
+                                    invoiceId
+                            );
 
             if (deleted) {
 
@@ -862,36 +1054,48 @@ public class InvoiceManagementGUI extends JFrame {
 
     private void loadInvoices() {
 
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(
+                0
+        );
 
         List<Invoice> invoices =
-                invoiceDAO.getAllInvoices();
+                invoiceDAO
+                        .getAllInvoices();
 
         for (Invoice invoice : invoices) {
 
             String studentName =
                     getStudentName(
-                            invoice.getStudentId()
+                            invoice
+                                    .getStudentId()
                     );
 
             Object[] row = {
 
-                    invoice.getInvoiceId(),
+                    invoice
+                            .getInvoiceId(),
 
-                    invoice.getStudentId(),
+                    invoice
+                            .getStudentId(),
 
                     studentName,
 
-                    invoice.getIssueDate(),
+                    invoice
+                            .getIssueDate(),
 
-                    invoice.getDueDate(),
+                    invoice
+                            .getDueDate(),
 
-                    invoice.getAmountDue(),
+                    invoice
+                            .getAmountDue(),
 
-                    invoice.getStatus()
+                    invoice
+                            .getStatus()
             };
 
-            tableModel.addRow(row);
+            tableModel.addRow(
+                    row
+            );
         }
     }
 
@@ -908,9 +1112,11 @@ public class InvoiceManagementGUI extends JFrame {
             if (student.getStudentId()
                     == studentId) {
 
-                return student.getFirstName()
+                return student
+                        .getFirstName()
                         + " "
-                        + student.getLastName();
+                        + student
+                        .getLastName();
             }
         }
 
@@ -924,9 +1130,11 @@ public class InvoiceManagementGUI extends JFrame {
     private void fillFieldsFromSelectedRow() {
 
         int selectedRow =
-                invoiceTable.getSelectedRow();
+                invoiceTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
+
             return;
         }
 
@@ -1020,9 +1228,11 @@ public class InvoiceManagementGUI extends JFrame {
             int studentId
     ) {
 
-        for (int i = 0;
-             i < students.size();
-             i++) {
+        for (
+                int i = 0;
+                i < students.size();
+                i++
+        ) {
 
             if (students
                     .get(i)
@@ -1030,7 +1240,9 @@ public class InvoiceManagementGUI extends JFrame {
                     == studentId) {
 
                 studentComboBox
-                        .setSelectedIndex(i);
+                        .setSelectedIndex(
+                                i
+                        );
 
                 return;
             }
@@ -1043,7 +1255,9 @@ public class InvoiceManagementGUI extends JFrame {
 
     private void clearFields() {
 
-        studentComboBox.setSelectedIndex(-1);
+        studentComboBox.setSelectedIndex(
+                -1
+        );
 
         // Issue Date resets to today
         issueDateChooser.setDate(
@@ -1051,11 +1265,17 @@ public class InvoiceManagementGUI extends JFrame {
         );
 
         // Due Date becomes blank
-        dueDateChooser.setDate(null);
+        dueDateChooser.setDate(
+                null
+        );
 
-        amountDueField.setText("");
+        amountDueField.setText(
+                ""
+        );
 
-        statusComboBox.setSelectedIndex(0);
+        statusComboBox.setSelectedIndex(
+                0
+        );
 
         invoiceTable.clearSelection();
     }
