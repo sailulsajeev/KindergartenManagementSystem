@@ -1,9 +1,15 @@
 package com.kindergarten.gui;
 
 import com.kindergarten.dao.AttendanceDAO;
+import com.kindergarten.dao.ClassroomDAO;
+import com.kindergarten.dao.EnrollmentDAO;
 import com.kindergarten.dao.StudentDAO;
+
 import com.kindergarten.model.Attendance;
+import com.kindergarten.model.Classroom;
+import com.kindergarten.model.Enrollment;
 import com.kindergarten.model.Student;
+
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
@@ -19,6 +25,7 @@ import java.util.List;
 public class AttendanceManagementGUI extends JFrame {
 
     private JComboBox<String> studentComboBox;
+    private JTextField classField;
 
     private JDateChooser attendanceDateChooser;
 
@@ -30,6 +37,8 @@ public class AttendanceManagementGUI extends JFrame {
 
     private final AttendanceDAO attendanceDAO;
     private final StudentDAO studentDAO;
+    private final EnrollmentDAO enrollmentDAO;
+    private final ClassroomDAO classroomDAO;
 
     private List<Student> students;
 
@@ -37,9 +46,11 @@ public class AttendanceManagementGUI extends JFrame {
 
         attendanceDAO = new AttendanceDAO();
         studentDAO = new StudentDAO();
+        enrollmentDAO = new EnrollmentDAO();
+        classroomDAO = new ClassroomDAO();
 
         setTitle("Attendance Management");
-        setSize(950, 620);
+        setSize(1050, 650);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -116,7 +127,7 @@ public class AttendanceManagementGUI extends JFrame {
         JPanel formPanel =
                 new JPanel(
                         new GridLayout(
-                                2,
+                                3,
                                 4,
                                 12,
                                 12
@@ -126,6 +137,11 @@ public class AttendanceManagementGUI extends JFrame {
         studentComboBox =
                 new JComboBox<>();
 
+        classField =
+                new JTextField();
+
+        classField.setEditable(false);
+
         attendanceDateChooser =
                 new JDateChooser();
 
@@ -133,7 +149,6 @@ public class AttendanceManagementGUI extends JFrame {
                 "yyyy-MM-dd"
         );
 
-        // Default to today
         attendanceDateChooser.setDate(
                 new Date()
         );
@@ -159,6 +174,14 @@ public class AttendanceManagementGUI extends JFrame {
         );
 
         formPanel.add(
+                new JLabel("Current Class")
+        );
+
+        formPanel.add(
+                classField
+        );
+
+        formPanel.add(
                 new JLabel("Attendance Date")
         );
 
@@ -181,6 +204,9 @@ public class AttendanceManagementGUI extends JFrame {
         formPanel.add(
                 notesField
         );
+
+        formPanel.add(new JLabel(""));
+        formPanel.add(new JLabel(""));
 
         centerPanel.add(
                 formPanel,
@@ -233,6 +259,7 @@ public class AttendanceManagementGUI extends JFrame {
                 "Attendance ID",
                 "Student ID",
                 "Student Name",
+                "Class",
                 "Attendance Date",
                 "Status",
                 "Notes"
@@ -342,6 +369,18 @@ public class AttendanceManagementGUI extends JFrame {
                 e -> clearFields()
         );
 
+        // =========================
+        // STUDENT SELECTION
+        // =========================
+
+        studentComboBox.addActionListener(
+                e -> updateCurrentClassField()
+        );
+
+        // =========================
+        // TABLE SELECTION
+        // =========================
+
         attendanceTable
                 .getSelectionModel()
                 .addListSelectionListener(
@@ -383,6 +422,98 @@ public class AttendanceManagementGUI extends JFrame {
         }
 
         studentComboBox.setSelectedIndex(-1);
+        classField.setText("");
+    }
+
+    // =========================
+    // UPDATE CURRENT CLASS
+    // =========================
+
+    private void updateCurrentClassField() {
+
+        int studentIndex =
+                studentComboBox.getSelectedIndex();
+
+        if (studentIndex == -1) {
+
+            classField.setText("");
+
+            return;
+        }
+
+        Student selectedStudent =
+                students.get(studentIndex);
+
+        Classroom classroom =
+                getActiveClassForStudent(
+                        selectedStudent.getStudentId()
+                );
+
+        if (classroom == null) {
+
+            classField.setText(
+                    "No Active Enrollment"
+            );
+
+        } else {
+
+            classField.setText(
+                    classroom.getClassName()
+            );
+        }
+    }
+
+    // =========================
+    // GET ACTIVE CLASS
+    // =========================
+
+    private Classroom getActiveClassForStudent(
+            int studentId
+    ) {
+
+        List<Enrollment> enrollments =
+                enrollmentDAO.getAllEnrollments();
+
+        Integer activeClassId = null;
+
+        for (Enrollment enrollment : enrollments) {
+
+            boolean sameStudent =
+                    enrollment.getStudentId()
+                            == studentId;
+
+            boolean active =
+                    enrollment.getStatus() != null
+                            && enrollment
+                            .getStatus()
+                            .equalsIgnoreCase("Active");
+
+            if (sameStudent && active) {
+
+                activeClassId =
+                        enrollment.getClassId();
+
+                break;
+            }
+        }
+
+        if (activeClassId == null) {
+            return null;
+        }
+
+        List<Classroom> classrooms =
+                classroomDAO.getAllClassrooms();
+
+        for (Classroom classroom : classrooms) {
+
+            if (classroom.getClassId()
+                    == activeClassId) {
+
+                return classroom;
+            }
+        }
+
+        return null;
     }
 
     // =========================
@@ -406,6 +537,28 @@ public class AttendanceManagementGUI extends JFrame {
                 return;
             }
 
+            Student selectedStudent =
+                    students.get(studentIndex);
+
+            // =========================
+            // ACTIVE ENROLLMENT CHECK
+            // =========================
+
+            Classroom activeClass =
+                    getActiveClassForStudent(
+                            selectedStudent.getStudentId()
+                    );
+
+            if (activeClass == null) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Attendance cannot be recorded because this student has no active class enrollment."
+                );
+
+                return;
+            }
+
             Date selectedDate =
                     attendanceDateChooser.getDate();
 
@@ -418,9 +571,6 @@ public class AttendanceManagementGUI extends JFrame {
 
                 return;
             }
-
-            Student selectedStudent =
-                    students.get(studentIndex);
 
             LocalDate attendanceDate =
                     selectedDate
@@ -544,6 +694,28 @@ public class AttendanceManagementGUI extends JFrame {
                 return;
             }
 
+            Student selectedStudent =
+                    students.get(studentIndex);
+
+            // =========================
+            // ACTIVE ENROLLMENT CHECK
+            // =========================
+
+            Classroom activeClass =
+                    getActiveClassForStudent(
+                            selectedStudent.getStudentId()
+                    );
+
+            if (activeClass == null) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Attendance cannot be updated because this student has no active class enrollment."
+                );
+
+                return;
+            }
+
             Date selectedDate =
                     attendanceDateChooser.getDate();
 
@@ -566,9 +738,6 @@ public class AttendanceManagementGUI extends JFrame {
                                     )
                                     .toString()
                     );
-
-            Student selectedStudent =
-                    students.get(studentIndex);
 
             LocalDate attendanceDate =
                     selectedDate
@@ -780,6 +949,11 @@ public class AttendanceManagementGUI extends JFrame {
                             attendance.getStudentId()
                     );
 
+            String className =
+                    getClassNameForStudent(
+                            attendance.getStudentId()
+                    );
+
             Object[] row = {
 
                     attendance.getAttendanceId(),
@@ -787,6 +961,8 @@ public class AttendanceManagementGUI extends JFrame {
                     attendance.getStudentId(),
 
                     studentName,
+
+                    className,
 
                     attendance.getAttendanceDate(),
 
@@ -822,6 +998,27 @@ public class AttendanceManagementGUI extends JFrame {
     }
 
     // =========================
+    // GET CLASS NAME
+    // =========================
+
+    private String getClassNameForStudent(
+            int studentId
+    ) {
+
+        Classroom classroom =
+                getActiveClassForStudent(
+                        studentId
+                );
+
+        if (classroom == null) {
+
+            return "No Active Class";
+        }
+
+        return classroom.getClassName();
+    }
+
+    // =========================
     // SELECT TABLE ROW
     // =========================
 
@@ -851,7 +1048,7 @@ public class AttendanceManagementGUI extends JFrame {
                             tableModel
                                     .getValueAt(
                                             selectedRow,
-                                            3
+                                            4
                                     )
                                     .toString()
                     );
@@ -873,7 +1070,7 @@ public class AttendanceManagementGUI extends JFrame {
                     tableModel
                             .getValueAt(
                                     selectedRow,
-                                    4
+                                    5
                             )
                             .toString();
 
@@ -884,7 +1081,7 @@ public class AttendanceManagementGUI extends JFrame {
             Object notes =
                     tableModel.getValueAt(
                             selectedRow,
-                            5
+                            6
                     );
 
             if (notes == null) {
@@ -897,6 +1094,8 @@ public class AttendanceManagementGUI extends JFrame {
                         notes.toString()
                 );
             }
+
+            updateCurrentClassField();
         }
     }
 
@@ -932,6 +1131,8 @@ public class AttendanceManagementGUI extends JFrame {
     private void clearFields() {
 
         studentComboBox.setSelectedIndex(-1);
+
+        classField.setText("");
 
         attendanceDateChooser.setDate(
                 new Date()
