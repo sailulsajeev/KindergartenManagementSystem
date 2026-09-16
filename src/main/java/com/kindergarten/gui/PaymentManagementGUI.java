@@ -54,17 +54,25 @@ public class PaymentManagementGUI extends JFrame {
         setLocationRelativeTo(null);
 
         JPanel mainPanel =
-                new JPanel(new BorderLayout(0, 20));
+                new JPanel(
+                        new BorderLayout(0, 20)
+                );
 
         mainPanel.setBorder(
-                new EmptyBorder(20, 25, 20, 25)
+                new EmptyBorder(
+                        20,
+                        25,
+                        20,
+                        25
+                )
         );
 
         // =========================
         // HEADER
         // =========================
 
-        JPanel headerPanel = new JPanel();
+        JPanel headerPanel =
+                new JPanel();
 
         headerPanel.setLayout(
                 new BoxLayout(
@@ -74,7 +82,9 @@ public class PaymentManagementGUI extends JFrame {
         );
 
         JLabel titleLabel =
-                new JLabel("Payment Management");
+                new JLabel(
+                        "Payment Management"
+                );
 
         titleLabel.setFont(
                 new Font(
@@ -106,7 +116,11 @@ public class PaymentManagementGUI extends JFrame {
         );
 
         headerPanel.add(titleLabel);
-        headerPanel.add(Box.createVerticalStrut(5));
+
+        headerPanel.add(
+                Box.createVerticalStrut(5)
+        );
+
         headerPanel.add(subtitleLabel);
 
         mainPanel.add(
@@ -143,7 +157,6 @@ public class PaymentManagementGUI extends JFrame {
                 "yyyy-MM-dd"
         );
 
-        // Default payment date to today
         paymentDateChooser.setDate(
                 new Date()
         );
@@ -210,8 +223,13 @@ public class PaymentManagementGUI extends JFrame {
                 statusComboBox
         );
 
-        formPanel.add(new JLabel(""));
-        formPanel.add(new JLabel(""));
+        formPanel.add(
+                new JLabel("")
+        );
+
+        formPanel.add(
+                new JLabel("")
+        );
 
         centerPanel.add(
                 formPanel,
@@ -232,19 +250,30 @@ public class PaymentManagementGUI extends JFrame {
                 );
 
         JButton addButton =
-                new JButton("Add Payment");
+                new JButton(
+                        "Add Payment"
+                );
 
         JButton updateButton =
-                new JButton("Update Payment");
+                new JButton(
+                        "Update Payment"
+                );
 
         JButton deleteButton =
-                new JButton("Delete Payment");
+                new JButton(
+                        "Delete Payment"
+                );
 
         JButton clearButton =
-                new JButton("Clear");
+                new JButton(
+                        "Clear"
+                );
 
         Dimension buttonSize =
-                new Dimension(170, 35);
+                new Dimension(
+                        170,
+                        35
+                );
 
         addButton.setPreferredSize(buttonSize);
         updateButton.setPreferredSize(buttonSize);
@@ -281,14 +310,19 @@ public class PaymentManagementGUI extends JFrame {
                             int row,
                             int column
                     ) {
+
                         return false;
                     }
                 };
 
         paymentTable =
-                new JTable(tableModel);
+                new JTable(
+                        tableModel
+                );
 
-        paymentTable.setRowHeight(28);
+        paymentTable.setRowHeight(
+                28
+        );
 
         paymentTable.setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION
@@ -305,7 +339,9 @@ public class PaymentManagementGUI extends JFrame {
                 );
 
         JLabel tableTitle =
-                new JLabel("Payment Records");
+                new JLabel(
+                        "Payment Records"
+                );
 
         tableTitle.setFont(
                 new Font(
@@ -378,6 +414,7 @@ public class PaymentManagementGUI extends JFrame {
                         e -> {
 
                             if (!e.getValueIsAdjusting()) {
+
                                 fillFieldsFromSelectedRow();
                             }
                         }
@@ -431,7 +468,9 @@ public class PaymentManagementGUI extends JFrame {
             );
         }
 
-        invoiceComboBox.setSelectedIndex(-1);
+        invoiceComboBox.setSelectedIndex(
+                -1
+        );
     }
 
     // =========================
@@ -443,7 +482,8 @@ public class PaymentManagementGUI extends JFrame {
         try {
 
             int invoiceIndex =
-                    invoiceComboBox.getSelectedIndex();
+                    invoiceComboBox
+                            .getSelectedIndex();
 
             if (invoiceIndex == -1) {
 
@@ -456,7 +496,8 @@ public class PaymentManagementGUI extends JFrame {
             }
 
             Date selectedPaymentDate =
-                    paymentDateChooser.getDate();
+                    paymentDateChooser
+                            .getDate();
 
             if (selectedPaymentDate == null) {
 
@@ -530,7 +571,7 @@ public class PaymentManagementGUI extends JFrame {
             }
 
             // =========================
-            // PAYMENT AMOUNT VALIDATION
+            // INDIVIDUAL PAYMENT VALIDATION
             // =========================
 
             if (amountPaid.compareTo(
@@ -556,6 +597,53 @@ public class PaymentManagementGUI extends JFrame {
                     statusComboBox
                             .getSelectedItem()
                             .toString();
+
+            // =========================
+            // TOTAL COMPLETED PAYMENT VALIDATION
+            // =========================
+
+            if (status.equalsIgnoreCase(
+                    "Completed"
+            )) {
+
+                BigDecimal existingTotal =
+                        getCompletedPaymentTotal(
+                                selectedInvoice.getInvoiceId(),
+                                -1
+                        );
+
+                BigDecimal newTotal =
+                        existingTotal.add(
+                                amountPaid
+                        );
+
+                if (newTotal.compareTo(
+                        selectedInvoice.getAmountDue()
+                ) > 0) {
+
+                    BigDecimal remainingAmount =
+                            selectedInvoice
+                                    .getAmountDue()
+                                    .subtract(
+                                            existingTotal
+                                    );
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "This payment would make the total payments greater than the invoice amount.\n"
+                                    + "Invoice amount: "
+                                    + selectedInvoice.getAmountDue()
+                                    + "\nCompleted payments already recorded: "
+                                    + existingTotal
+                                    + "\nRemaining amount: "
+                                    + remainingAmount,
+                            "Payment Amount Exceeded",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+
+                    return;
+                }
+            }
 
             Payment payment =
                     new Payment(
@@ -613,7 +701,8 @@ public class PaymentManagementGUI extends JFrame {
     private void updatePayment() {
 
         int selectedRow =
-                paymentTable.getSelectedRow();
+                paymentTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -628,7 +717,8 @@ public class PaymentManagementGUI extends JFrame {
         try {
 
             int invoiceIndex =
-                    invoiceComboBox.getSelectedIndex();
+                    invoiceComboBox
+                            .getSelectedIndex();
 
             if (invoiceIndex == -1) {
 
@@ -641,7 +731,8 @@ public class PaymentManagementGUI extends JFrame {
             }
 
             Date selectedPaymentDate =
-                    paymentDateChooser.getDate();
+                    paymentDateChooser
+                            .getDate();
 
             if (selectedPaymentDate == null) {
 
@@ -725,7 +816,7 @@ public class PaymentManagementGUI extends JFrame {
             }
 
             // =========================
-            // PAYMENT AMOUNT VALIDATION
+            // INDIVIDUAL PAYMENT VALIDATION
             // =========================
 
             if (amountPaid.compareTo(
@@ -751,6 +842,53 @@ public class PaymentManagementGUI extends JFrame {
                     statusComboBox
                             .getSelectedItem()
                             .toString();
+
+            // =========================
+            // TOTAL COMPLETED PAYMENT VALIDATION
+            // =========================
+
+            if (status.equalsIgnoreCase(
+                    "Completed"
+            )) {
+
+                BigDecimal existingTotal =
+                        getCompletedPaymentTotal(
+                                selectedInvoice.getInvoiceId(),
+                                paymentId
+                        );
+
+                BigDecimal newTotal =
+                        existingTotal.add(
+                                amountPaid
+                        );
+
+                if (newTotal.compareTo(
+                        selectedInvoice.getAmountDue()
+                ) > 0) {
+
+                    BigDecimal remainingAmount =
+                            selectedInvoice
+                                    .getAmountDue()
+                                    .subtract(
+                                            existingTotal
+                                    );
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "This payment would make the total payments greater than the invoice amount.\n"
+                                    + "Invoice amount: "
+                                    + selectedInvoice.getAmountDue()
+                                    + "\nCompleted payments already recorded: "
+                                    + existingTotal
+                                    + "\nRemaining amount: "
+                                    + remainingAmount,
+                            "Payment Amount Exceeded",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+
+                    return;
+                }
+            }
 
             Payment payment =
                     new Payment(
@@ -802,13 +940,62 @@ public class PaymentManagementGUI extends JFrame {
     }
 
     // =========================
+    // COMPLETED PAYMENT TOTAL
+    // =========================
+
+    private BigDecimal getCompletedPaymentTotal(
+            int invoiceId,
+            int paymentIdToIgnore
+    ) {
+
+        BigDecimal total =
+                BigDecimal.ZERO;
+
+        List<Payment> payments =
+                paymentDAO.getAllPayments();
+
+        for (Payment payment : payments) {
+
+            boolean sameInvoice =
+                    payment.getInvoiceId()
+                            == invoiceId;
+
+            boolean differentPayment =
+                    payment.getPaymentId()
+                            != paymentIdToIgnore;
+
+            boolean completed =
+                    payment.getStatus()
+                            != null
+                            && payment
+                            .getStatus()
+                            .equalsIgnoreCase(
+                                    "Completed"
+                            );
+
+            if (sameInvoice
+                    && differentPayment
+                    && completed) {
+
+                total =
+                        total.add(
+                                payment.getAmountPaid()
+                        );
+            }
+        }
+
+        return total;
+    }
+
+    // =========================
     // DELETE PAYMENT
     // =========================
 
     private void deletePayment() {
 
         int selectedRow =
-                paymentTable.getSelectedRow();
+                paymentTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -872,7 +1059,9 @@ public class PaymentManagementGUI extends JFrame {
 
     private void loadPayments() {
 
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(
+                0
+        );
 
         List<Payment> payments =
                 paymentDAO.getAllPayments();
@@ -901,7 +1090,9 @@ public class PaymentManagementGUI extends JFrame {
                     payment.getStatus()
             };
 
-            tableModel.addRow(row);
+            tableModel.addRow(
+                    row
+            );
         }
     }
 
@@ -956,9 +1147,11 @@ public class PaymentManagementGUI extends JFrame {
     private void fillFieldsFromSelectedRow() {
 
         int selectedRow =
-                paymentTable.getSelectedRow();
+                paymentTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
+
             return;
         }
 
@@ -1041,9 +1234,11 @@ public class PaymentManagementGUI extends JFrame {
             int invoiceId
     ) {
 
-        for (int i = 0;
-             i < invoices.size();
-             i++) {
+        for (
+                int i = 0;
+                i < invoices.size();
+                i++
+        ) {
 
             if (invoices
                     .get(i)
@@ -1064,18 +1259,25 @@ public class PaymentManagementGUI extends JFrame {
 
     private void clearFields() {
 
-        invoiceComboBox.setSelectedIndex(-1);
+        invoiceComboBox.setSelectedIndex(
+                -1
+        );
 
-        // Payment Date resets to today
         paymentDateChooser.setDate(
                 new Date()
         );
 
-        amountPaidField.setText("");
+        amountPaidField.setText(
+                ""
+        );
 
-        paymentMethodComboBox.setSelectedIndex(0);
+        paymentMethodComboBox.setSelectedIndex(
+                0
+        );
 
-        statusComboBox.setSelectedIndex(0);
+        statusComboBox.setSelectedIndex(
+                0
+        );
 
         paymentTable.clearSelection();
     }
